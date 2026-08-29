@@ -7,4 +7,4 @@
 	url = https://github.com/gabime/spdlog.git
 [submodule "deps/curl"]
 	path = deps/curl
-	url = https://github.com/curl/curl.git
+	url = https://gitee.com/mirrors/curl.git
