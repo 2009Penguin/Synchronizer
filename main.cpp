@@ -7,103 +7,71 @@
 #include <unistd.h>
 #include <spdlog/spdlog.h>
 
-void setTimeViaXdotool(const std::string& year, const std::string& month, const std::string& day,const std::string& hour, const std::string& minute) {
-    using namespace spdlog;
-    const float delay = 500000;
-    // system("xdotool windowminimize $(xdotool getactivewindow)");
-    // info("xdotool windowminimize $(xdotool getactivewindow)");
-    // sleep(1);
+#include "core/config/ConfigManager.h"
+#include "core/TimeProvider/TimeProvider.h"
+#include "core/TimeSetter/TimeSetter.h"
+#include "core/TimeSetter/XDoToolSetter.h"
 
-    // 1. 按下 Windows 键
-    system("xdotool key super");
-    info("xdotool key super");
-    usleep(delay);
+using namespace std;
+using namespace spdlog;
 
-    // 2. 三下 Tab
-    system("xdotool key Tab Tab Tab");
-    info("xdotool key Tab Tab Tab");
-    usleep(delay);
+struct Time
+{
+    string year, month, day, hour, minute;
+};
 
-    // 3. 一下回车
-    system("xdotool key Return");
-    info("xdotool key Return");
-    sleep(5);
+Time parseTime(const string time)
+{
+    tm t = {};
+    istringstream ss(time);
+    ss >> get_time(&t, "%Y-%m-%d %H:%M:%S");
 
-    // 5. 两下 Tab
-    system("xdotool key Tab Tab");
-    info("xdotool key Tab Tab");
-    usleep(delay);
+    int year = t.tm_year + 1900;
+    int month = t.tm_mon + 1;
+    int day = t.tm_mday;
+    int hour = t.tm_hour;
+    int minute = t.tm_min;
 
-    system("xdotool type \"pei\"");
-    info("xdotool type \"pei\"");
-    usleep(delay);
+    return Time{to_string(year), to_string(month), to_string(day),
+        to_string(hour), to_string(minute)};
+}
 
+void rollback(TimeSetter& ts,const RollbackConfig& rollbackConfig)
+{
 
-    // 7. 一下回车
-    system("xdotool key Return");
-    info("xdotool key Return");
-    sleep(1);
-
-    // 8. 十下 Tab
-    system("xdotool key Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab");
-    info("xdotool key Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab");
-    usleep(delay);
-
-    // 9. 输入年份
-    system(("xdotool type \"" + year + "\"").c_str());
-    info(("xdotool type \"" + year + "\"").c_str());
-    usleep(delay);
-
-    // 10. 三下 Tab
-    system("xdotool key Tab Tab Tab");
-    info("xdotool key Tab Tab Tab");
-    usleep(delay);
-
-    // 11. 输入月份
-    system(("xdotool type \"" + month + "\"").c_str());
-    info(("xdotool type \"" + month + "\"").c_str());
-    usleep(delay);
-
-    // 12. 三下 Tab
-    system("xdotool key Tab Tab Tab");
-    info("xdotool key Tab Tab Tab");
-    usleep(delay);
-
-    // 13. 输入日期
-    system(("xdotool type \"" + day + "\"").c_str());
-    info(("xdotool type \"" + day + "\"").c_str());
-    usleep(delay);
-
-    system("xdotool key Tab Tab Tab Tab Tab Tab Tab");
-    usleep(delay); // 操作后间隔1秒
-
-    // 2. 输入小时
-    system(("xdotool type \"" + hour + "\"").c_str());
-    usleep(delay);
-
-    // 3. 3次tab
-    system("xdotool key Tab Tab Tab");
-    usleep(delay);
-
-    // 4. 输入分钟
-    system(("xdotool type \"" + minute + "\"").c_str());
-    usleep(delay);
-
-    // 5. 23次tab（连续按下）
-    system("xdotool key Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab Tab");
-    usleep(delay);
-
-    // 15. 按下空格
-    system("xdotool key space");
-    info("xdotool key space");
-    sleep(1);
-
-    // 16. 按下 alt+f4
-    system("xdotool key alt+F4");
-    info("xdotool key alt+F4");
+    if (rollbackConfig.enabled)
+    {
+        info("回滚已启用，正在回滚至" + rollbackConfig.time);
+        Time t = parseTime(rollbackConfig.time);
+        ts.setTime(t.year,t.month,t.day,t.hour,t.minute);
+    }
+    info("回滚成功");
 }
 
 int main() {
-    setTimeViaXdotool("2026", "08", "27","08","30");
+    TimeProvider tm;
+    TimeSetter ts;
+
+    ts.setSetter(make_unique<XDoToolSetter>());
+    string time = tm.getTime();
+
+    ConfigManager& configManager = ConfigManager::instance();
+    RollbackConfig rollbackConfig = configManager.getRollbackConfig();
+
+    if (time.empty()){
+        error("时间获取异常");
+        rollback(ts, rollbackConfig);
+        return -1;
+    }
+    info("获取时间成功");
+
+    if (rollbackConfig.enabled)
+    {
+        info("自动更行回滚时间已开启，正在更新回滚时间");
+        configManager.setRollbackConfigTime(time);
+    }
+
+    Time t = parseTime(time);
+    ts.setTime(t.year,t.month,t.day,t.hour,t.minute);
     return 0;
 }

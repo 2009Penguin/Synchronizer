@@ -8,7 +8,10 @@
 
 
 class ITimeSetter {
-
+public:
+    virtual ~ITimeSetter() = default;
+    virtual void setTime(const std::string& year, const std::string& month, const std::string& day,
+        const std::string& hour, const std::string& minute) = 0;
 };
 
 

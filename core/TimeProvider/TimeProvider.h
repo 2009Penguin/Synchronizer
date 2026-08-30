@@ -11,11 +11,11 @@
 
 class TimeProvider {
 public:
-    void loadTimeProvider();
     std::string getTime();
 private:
     std::unique_ptr<ITimeProvider> mProvider;
-    void setimeProvider(std::unique_ptr<ITimeProvider> provider);
+    void loadTimeProvider();
+    void setTimeProvider(std::unique_ptr<ITimeProvider> provider);
 };
 
 

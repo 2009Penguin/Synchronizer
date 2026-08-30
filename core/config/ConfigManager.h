@@ -39,6 +39,8 @@ public:
     HttpConfig getHttpConfig();
     RollbackConfig getRollbackConfig();
 
+    void setRollbackConfigTime(std::string time);
+
     ConfigManager& operator=(const ConfigManager&) = delete;
     ConfigManager& operator=(ConfigManager&&) = delete;
 private:

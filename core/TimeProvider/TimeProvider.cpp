@@ -15,7 +15,7 @@ using namespace spdlog;
 string TimeProvider::getTime()
 {
     loadTimeProvider();
-    return mProvider->getTime();;
+    return mProvider->getTime();
 }
 
 void TimeProvider::loadTimeProvider()
@@ -23,24 +23,29 @@ void TimeProvider::loadTimeProvider()
     ConfigManager& configManager = ConfigManager::instance();
     SmbConfig smbConfig = configManager.getSmbConfig();
     HttpConfig httpConfig = configManager.getHttpConfig();
-    if (!(smbConfig.enabled && httpConfig.enabled))
+    if (!(smbConfig.enabled || httpConfig.enabled))
     {
         error("请启用Smb选项或者Http选项");
+        return;
+    }
+    if (smbConfig.enabled && httpConfig.enabled)
+    {
+        error("Smb选项和Http选项不得同时启用");
         return;
     }
     if (smbConfig.enabled)
     {
         info("启用Smb选项");
-        setimeProvider(make_unique<SmbProvider>());
+        setTimeProvider(make_unique<SmbProvider>());
     }
     if (httpConfig.enabled)
     {
         info("启用Http选项");
-        setimeProvider(make_unique<HttpProvider>());
+        setTimeProvider(make_unique<HttpProvider>());
     }
 }
 
-void TimeProvider::setimeProvider(std::unique_ptr<ITimeProvider> provider)
+void TimeProvider::setTimeProvider(std::unique_ptr<ITimeProvider> provider)
 {
     mProvider = move(provider);
 }

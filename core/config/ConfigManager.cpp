@@ -19,17 +19,27 @@ ConfigManager& ConfigManager::instance()
 
 SmbConfig ConfigManager::getSmbConfig()
 {
-    return json::parse(mJsonText).get<SmbConfig>();
+    return json::parse(mJsonText)["smb"].get<SmbConfig>();
 }
 
 HttpConfig ConfigManager::getHttpConfig()
 {
-    return json::parse(mJsonText).get<HttpConfig>();
+    return json::parse(mJsonText)["http"].get<HttpConfig>();
 }
 
 RollbackConfig ConfigManager::getRollbackConfig()
 {
-    return json::parse(mJsonText).get<RollbackConfig>();
+    return json::parse(mJsonText)["rollback"].get<RollbackConfig>();
+}
+
+void ConfigManager::setRollbackConfigTime(string time)
+{
+    json j = json::parse(mJsonText);
+    j["rollback"]["time"] = time;
+    std::ofstream out("config.json");
+    out << std::setw(4) << j << std::endl;
+    info("回滚时间更新成功");
+    mJsonText = j.dump();
 }
 
 ConfigManager::ConfigManager()

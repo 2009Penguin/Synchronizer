@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SPDLOG_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(SPDLOG_BUILD_EXAMPLE OFF CACHE BOOL "" FORCE)
 
+set(SPDLOG_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(deps/json)
 add_subdirectory(deps/spdlog)
 
@@ -22,6 +24,10 @@ add_executable(Synchronizer
         core/TimeProvider/HttpProvider.h
         core/TimeProvider/TimeProvider.cpp
         core/TimeProvider/TimeProvider.h
+        core/TimeSetter/XDoToolSetter.cpp
+        core/TimeSetter/XDoToolSetter.h
+        core/TimeSetter/TimeSetter.cpp
+        core/TimeSetter/TimeSetter.h
 )
 
 target_link_libraries(Synchronizer PRIVATE
