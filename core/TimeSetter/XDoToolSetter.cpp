@@ -22,7 +22,7 @@ void XDoToolSetter::openControlCenter(const float delay)
 
     system("xdotool key Return");
     info("等待窗口加载");
-    sleep(5);
+    sleep(6);
 }
 
 void XDoToolSetter::enterTimeAdjustmentInterface(const float delay)
@@ -36,7 +36,7 @@ void XDoToolSetter::enterTimeAdjustmentInterface(const float delay)
 
 
     system("xdotool key Return");
-    sleep(1);
+    usleep(delay);
 }
 
 void XDoToolSetter::adjustYear(const string& year, const float delay)
@@ -91,7 +91,7 @@ void XDoToolSetter::confirmChanges(const float delay)
     usleep(delay);
 
     system("xdotool key space");
-    sleep(1);
+    usleep(delay);
     info("时间修改完成");
 }
 
@@ -120,7 +120,7 @@ void XDoToolSetter::setTime(const string& year, const string& month, const strin
                             const string& hour, const string& minute)
 {
     using namespace spdlog;
-    const float delay = 500000;
+    const float delay = 400000;//0.4秒
 
     openControlCenter(delay);
     enterTimeAdjustmentInterface(delay);
