@@ -11,7 +11,10 @@
 
 class XDoToolSetter:public ITimeSetter {
 public:
-    void openControlCenter(float delay);
+    void setTime(const std::string& year, const std::string& month, const std::string& day,
+                 const std::string& hour, const std::string& minute) override;
+private:
+    void openControlCenter(float delay,int windowInitializeDelay);
     void enterTimeAdjustmentInterface(float delay);
     void adjustYear(const std::string& year, float delay);
     void adjustMonth(const std::string& month, float delay);
@@ -21,9 +24,10 @@ public:
     void confirmChanges(float delay);
     void adjustTime(const std::string& year, const std::string& month, const std::string& day, const std::string& hour,
                     const std::string& minute, float delay);
-    void closeControlCenter();
-    void setTime(const std::string& year, const std::string& month, const std::string& day,
-                 const std::string& hour, const std::string& minute) override;
+    void closeControlCenter(const float delay);
+    void pressKey(const std::string& key, float delay,int times);
+    void typeString(const std::string& key, float delay);
+    void ensureEnglishKeyboard(float settingDelay);
 };
 
 
