@@ -9,6 +9,7 @@
 
 #include "core/config/ConfigManager.h"
 #include "core/TimeProvider/TimeProvider.h"
+#include "core/TimeSetter/SystemTimeSetter.h"
 #include "core/TimeSetter/TimeSetter.h"
 #include "core/TimeSetter/XDoToolSetter.h"
 
@@ -52,7 +53,8 @@ int main() {
     TimeProvider tm;
     TimeSetter ts;
 
-    ts.setSetter(make_unique<XDoToolSetter>());
+    // ts.setSetter(make_unique<XDoToolSetter>());
+    ts.setSetter(make_unique<SystemTimeSetter>());
     string time = tm.getTime();
 
     ConfigManager& configManager = ConfigManager::instance();

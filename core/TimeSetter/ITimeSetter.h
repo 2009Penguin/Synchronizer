@@ -5,7 +5,7 @@
 #ifndef SYNCHRONIZER_ITIMESETTER_H
 #define SYNCHRONIZER_ITIMESETTER_H
 
-
+#include <string>
 
 class ITimeSetter {
 public:

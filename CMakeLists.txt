@@ -28,6 +28,8 @@ add_executable(Synchronizer
         core/TimeSetter/XDoToolSetter.h
         core/TimeSetter/TimeSetter.cpp
         core/TimeSetter/TimeSetter.h
+        core/TimeSetter/SystemTimeSetter.cpp
+        core/TimeSetter/SystemTimeSetter.h
 )
 
 target_link_libraries(Synchronizer PRIVATE
